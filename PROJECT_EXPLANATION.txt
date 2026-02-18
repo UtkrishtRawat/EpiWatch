@@ -1,0 +1,249 @@
+================================================================================
+        PREDICTIVE DISEASE OUTBREAK DASHBOARD
+        Early Warning System for Public Health
+================================================================================
+
+PROJECT TITLE:
+  Predictive Disease Outbreak Dashboard
+
+PROBLEM STATEMENT (PS5):
+  Develop a predictive analytics dashboard integrating hospital admission data
+  and water quality reports to forecast disease outbreaks (e.g., Cholera, Typhoid)
+  up to 48 hours in advance.
+
+================================================================================
+  1. WHAT THE PROJECT DOES
+================================================================================
+
+  This dashboard serves as a real-time early warning system for public health
+  authorities. It ingests two critical data streams — hospital admission records
+  and water quality reports — and uses statistical ML models to:
+
+    • Detect anomalies in disease admission patterns
+    • Identify correlations between water contamination and waterborne diseases
+    • Forecast outbreak trends 48 hours into the future
+    • Classify geographic regions by risk level (Low / Moderate / High / Critical)
+    • Generate automated alerts when thresholds are breached
+
+  The system monitors 4 diseases: Cholera, Typhoid, Dengue, and Malaria
+  across 8 geographic regions with distinct population and water supply profiles.
+
+================================================================================
+  2. HOW IT WORKS — TECHNICAL ARCHITECTURE
+================================================================================
+
+  LAYER 1: DATA INGESTION & GENERATION
+  -------------------------------------
+  • Synthetic data generator produces realistic datasets:
+    - 1,200+ hospital admission records over 30 days
+    - 720 water quality reports (pH, turbidity, coliform, dissolved oxygen, etc.)
+    - Anomaly injection windows simulating real outbreak scenarios
+  • Data includes timestamps, GPS coordinates, disease type, severity, patient
+    demographics, and water quality metrics per region.
+
+  LAYER 2: DATA PREPROCESSING & FEATURE ENGINEERING
+  --------------------------------------------------
+  • Time bucketing: Records are aggregated into 6-hour and 24-hour windows
+  • Rolling averages and rate-of-change computation
+  • Water Quality Index (WQI) — composite score from 5 parameters:
+      pH (15%), Turbidity (20%), Coliform Count (30%),
+      Dissolved Oxygen (20%), Chlorine Residual (15%)
+  • Feature vectors combining admission trends with water quality metrics
+
+  LAYER 3: ML / ANALYTICS MODELS
+  --------------------------------
+  Three core analytical models power the predictions:
+
+  a) ANOMALY DETECTOR (Z-Score Based)
+     - Sliding window Z-score analysis on admission counts
+     - Per-disease and per-region anomaly detection
+     - Threshold: Z-score > 2.0 flags an anomaly
+     - Pearson correlation analysis between water quality degradation
+       and disease admission spikes
+
+  b) 48-HOUR FORECASTER (Holt's Double Exponential Smoothing)
+     - Exponential Moving Average (EMA) with trend component
+     - Alpha = 0.3 (level smoothing), Trend Alpha = 0.1
+     - Confidence intervals that widen with forecast horizon
+     - Trend classification: Rising / Stable / Falling
+     - MAPE-based accuracy evaluation on holdout data
+
+  c) RISK CLASSIFIER (Multi-Factor Weighted Scoring)
+     - 6 risk factors with calibrated weights:
+         Admission Velocity     (30%) — rate of increase in recent admissions
+         Water Quality Score    (25%) — inverse of WQI
+         Severity Index         (20%) — proportion of severe cases
+         Historical Risk        (10%) — baseline from past outbreak data
+         Population Density      (8%) — scaled by regional population
+         Trend Score             (7%) — from forecaster output
+     - 4-tier output: LOW / MODERATE / HIGH / CRITICAL
+     - Automated alert generation based on risk level and anomalies
+
+  LAYER 4: REST API (Express.js)
+  --------------------------------
+  7 API endpoints serving processed analytics:
+    GET /api/dashboard      — Full dashboard summary with KPIs
+    GET /api/admissions     — Time-series admission data (filterable)
+    GET /api/water-quality  — Water quality metrics by region
+    GET /api/predictions    — 48-hour forecasts with confidence bands
+    GET /api/alerts         — Active alerts sorted by severity
+    GET /api/hotspots       — Geospatial data for heatmap rendering
+    GET /api/regions/:id    — Detailed risk breakdown for a region
+
+  LAYER 5: FRONTEND DASHBOARD
+  --------------------------------
+  Single-page responsive dashboard with:
+    • 4 KPI cards — admissions, alerts, active regions, 48h trend
+    • Interactive Leaflet.js map with heatmap overlay and region risk circles
+    • Chart.js visualizations:
+        - Multi-line admission trend chart (per disease + total)
+        - 48-hour forecast chart with confidence bands
+        - Disease breakdown doughnut chart
+        - Severity distribution bar chart
+    • Live alerts sidebar with severity-based color coding
+    • Risk classification panel with progress bars
+    • Water Quality Index gauges per region
+    • Water-disease correlation display
+    • Auto-refresh every 30 seconds
+
+================================================================================
+  3. TECHNOLOGY STACK
+================================================================================
+
+  Component          Technology              Purpose
+  ---------          ----------              -------
+  Backend            Node.js + Express       REST API server
+  Frontend           HTML / CSS / JavaScript  Dashboard interface
+  Charts             Chart.js                Data visualizations
+  Maps               Leaflet.js + Heatmap    Geospatial mapping
+  ML Models          Custom JavaScript       Anomaly detection, forecasting
+  Data Format        JSON                    Lightweight data interchange
+  Styling            CSS3 (Dark Theme)       Glassmorphism, animations
+
+================================================================================
+  4. KEY FEATURES MATCHING THE REQUIREMENTS
+================================================================================
+
+  REQUIREMENT                        IMPLEMENTATION
+  -----------                        --------------
+  Integrate hospital & water data    ✅ Dual data pipelines with JSON ingestion
+  Detect anomalies & correlations    ✅ Z-score detector + Pearson correlation
+  Identify geographic hotspots       ✅ Leaflet heatmap + region risk overlays
+  48-hour outbreak prediction        ✅ Holt EMA forecaster with confidence bands
+  Risk classification                ✅ 4-tier classifier (Low/Moderate/High/Critical)
+  Automated alerts                   ✅ Severity-based alert generation system
+  Secure data pipelines              ✅ Server-side processing, CORS-enabled API
+  Data preprocessing                 ✅ Time bucketing, normalization, WQI scoring
+  ML-based anomaly & forecasting     ✅ Statistical ML models (Z-score, EMA, weighted)
+  Geospatial mapping                 ✅ Leaflet.js with heatmap and markers
+  Scalable analytics backend         ✅ Express.js with modular architecture
+  User-friendly visualization        ✅ Dark-themed dashboard with interactive charts
+
+================================================================================
+  5. INNOVATION & DIFFERENTIATORS
+================================================================================
+
+  • CROSS-DOMAIN CORRELATION: Unlike simple dashboards, this system correlates
+    water quality degradation with disease admissions to identify root causes
+    of waterborne disease outbreaks before they fully develop.
+
+  • MULTI-FACTOR RISK SCORING: Risk classification goes beyond simple thresholds.
+    It combines 6 weighted factors including population density, admission
+    velocity, water quality, severity trends, and historical patterns.
+
+  • PREDICTIVE, NOT REACTIVE: The 48-hour forecast with confidence bands allows
+    health authorities to take preventive action before outbreaks peak.
+
+  • REAL-TIME MONITORING: Auto-refreshing dashboard with live status indicators
+    ensures decision-makers always have the latest intelligence.
+
+  • ACTIONABLE ALERTS: Automated severity-classified alerts with contextual
+    information (Z-scores, risk scores, affected regions) enable rapid response.
+
+================================================================================
+  6. ETHICAL & PRIVACY CONSIDERATIONS
+================================================================================
+
+  This project is designed with "Privacy by Design" principles to address the
+  sensitivity of medical data while delivering maximum societal benefit:
+
+  A. DATA AGGREGATION & ANONYMIZATION
+     - The system does NOT require Personally Identifiable Information (PII)
+       like names, addresses, or phone numbers.
+     - Hospitals only need to report aggregated counts (e.g., "5 cases of Cholera
+       in Region A between 10 AM - 12 PM").
+     - Utilizing k-anonymity principles ensures individual patients cannot be
+       re-identified from the dataset.
+
+  B. LEGAL COMPLIANCE (Notifiable Diseases)
+     - In most countries (including India via IDSP/NCDC), hospitals are legally
+       mandated to report infectious disease cases to government authorities.
+     - This dashboard serves as the secure visualization layer for that legally
+       mandated data flow.
+
+  C. SOCIETAL IMPACT vs. PRIVACY
+     - The trade-off leans heavily towards public good: By using anonymous
+       count data, we protect individual privacy while gaining the ability to
+       predict outbreaks 48 hours early.
+     - Early warning allows:
+       • Pre-positioning of medicines and ORS packets
+       • Focused water sanitation drives in high-risk zones
+       • Alerting vulnerable populations (elderly, children)
+       • Preventing the spread to neighboring regions
+
+================================================================================
+  7. HOW TO RUN
+================================================================================
+
+  Prerequisites: Node.js (v18+)
+
+  Step 1:  npm install              — Install dependencies
+  Step 2:  npm run generate-data    — Generate synthetic datasets
+  Step 3:  npm run dev              — Start the server
+  Step 4:  Open http://localhost:3000 in browser
+
+================================================================================
+  7. PROJECT STRUCTURE
+================================================================================
+
+  disease-outbreak-dashboard/
+  ├── server/
+  │   ├── index.js                  — Express server entry point
+  │   ├── routes/api.js             — REST API endpoints
+  │   ├── models/
+  │   │   ├── anomalyDetector.js    — Z-score anomaly detection
+  │   │   ├── forecaster.js         — 48h EMA forecasting
+  │   │   └── riskClassifier.js     — Multi-factor risk scoring
+  │   ├── utils/dataPreprocessor.js — Feature engineering & WQI
+  │   └── data/
+  │       ├── generateData.js       — Synthetic data generator
+  │       └── regions.js            — Geographic region definitions
+  ├── public/
+  │   ├── index.html                — Dashboard layout
+  │   ├── css/styles.css            — Dark theme with glassmorphism
+  │   └── js/
+  │       ├── app.js                — Main controller + auto-refresh
+  │       ├── charts.js             — Chart.js visualizations
+  │       ├── map.js                — Leaflet heatmap + overlays
+  │       └── alerts.js             — Alert & risk UI rendering
+  ├── package.json
+  └── README.md
+
+  Total: 14 source files across 4 architectural layers
+
+================================================================================
+  8. FUTURE SCOPE
+================================================================================
+
+  • Integration with real hospital APIs (HL7 FHIR) and government water
+    quality databases for production deployment
+  • Deep learning models (LSTM/Transformer) for improved time-series prediction
+  • SMS/Email alert delivery for field health workers
+  • Mobile-responsive PWA for on-the-go access
+  • Multi-city scalability with database backend (PostgreSQL + TimescaleDB)
+  • Role-based access control for different stakeholder levels
+
+================================================================================
+  TEAM:
+  PROJECT: PS5 — Predictive Disease Outbreak Dashboard
+================================================================================
