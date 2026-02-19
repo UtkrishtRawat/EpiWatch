@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+npm-debug.log
+
+# Environment variables
+.env
+
+# Local data / Logs
+mongo saved reports/
+saved/
+reports/
+logs/
+*.log
+
+# OS metadata
+.DS_Store
+Thumbs.db

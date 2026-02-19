@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Data — Disease Outbreak Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">📝</div>
+            <h1>Add Custom Data</h1>
+        </div>
+        <a href="/" class="back-btn">← Back to Dashboard</a>
+    </header>
+
+    <main class="main-form">
+
+        <!-- DB Status -->
+        <div class="db-status db-disconnected" id="dbStatus">
+            <span>⏳</span> <span id="dbStatusText">Checking MongoDB connection...</span>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="case-form" onclick="switchTab('case-form')">🏥 Add Disease
+                Case</button>
+            <button class="tab-btn" data-tab="water-form" onclick="switchTab('water-form')">💧 Add Water Report</button>
+            <button class="tab-btn" data-tab="records" onclick="switchTab('records')">📋 View Custom Data</button>
+        </div>
+
+        <!-- TAB 1: Add Case -->
+        <div class="tab-content active" id="case-form">
+            <div class="form-card">
+                <h2>🏥 Add Disease Case Record</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">
+                    Add anonymized case data — no personal patient info required.
+                </p>
+
+                <form id="caseForm" onsubmit="submitCase(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="caseDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Zone</label>
+                            <select id="caseZone" required>
+                                <option value="">Select Zone</option>
+                                <option value="Zone A - Riverside">Zone A - Riverside</option>
+                                <option value="Zone B - Old Town">Zone B - Old Town</option>
+                                <option value="Zone C - Market Area">Zone C - Market Area</option>
+                                <option value="Zone D - Industrial">Zone D - Industrial</option>
+                                <option value="Zone E - Suburbs North">Zone E - Suburbs North</option>
+                                <option value="Zone F - Suburbs South">Zone F - Suburbs South</option>
+                                <option value="Zone G - Lake District">Zone G - Lake District</option>
+                                <option value="Zone H - Highway Belt">Zone H - Highway Belt</option>
+                                <option value="Zone I - University Area">Zone I - University Area</option>
+                                <option value="Zone J - Hospital Road">Zone J - Hospital Road</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Disease</label>
+                            <select id="caseDisease" required onchange="updateDiseaseType()">
+                                <option value="">Select Disease</option>
+                                <option value="Cholera">Cholera</option>
+                                <option value="Typhoid">Typhoid</option>
+                                <option value="Hepatitis A">Hepatitis A</option>
+                                <option value="Dengue">Dengue</option>
+                                <option value="Malaria">Malaria</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Disease Type</label>
+                            <input type="text" id="caseDiseaseType" readonly placeholder="Auto-filled">
+                        </div>
+                        <div class="form-group">
+                            <label>Number of Cases</label>
+                            <input type="number" id="caseCaseCount" min="1" value="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Active Cases</label>
+                            <input type="number" id="caseActiveCases" min="0" value="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Mild Cases</label>
+                            <input type="number" id="caseMild" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Moderate Cases</label>
+                            <input type="number" id="caseModerate" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Severe Cases</label>
+                            <input type="number" id="caseSevere" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Critical Cases</label>
+                            <input type="number" id="caseCritical" min="0" value="0">
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn" id="caseSubmitBtn">➕ Add Case Record</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- TAB 2: Add Water Report -->
+        <div class="tab-content" id="water-form">
+            <div class="form-card">
+                <h2>💧 Add Water Quality Report</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">
+                    Add water quality test results from a monitoring source.
+                </p>
+
+                <form id="waterForm" onsubmit="submitWater(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Water Source Name</label>
+                            <input type="text" id="waterSource" placeholder="e.g. River Intake Point A" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Zone</label>
+                            <select id="waterZone" required>
+                                <option value="">Select Zone</option>
+                                <option value="Zone A - Riverside">Zone A - Riverside</option>
+                                <option value="Zone B - Old Town">Zone B - Old Town</option>
+                                <option value="Zone C - Market Area">Zone C - Market Area</option>
+                                <option value="Zone D - Industrial">Zone D - Industrial</option>
+                                <option value="Zone E - Suburbs North">Zone E - Suburbs North</option>
+                                <option value="Zone F - Suburbs South">Zone F - Suburbs South</option>
+                                <option value="Zone G - Lake District">Zone G - Lake District</option>
+                                <option value="Zone H - Highway Belt">Zone H - Highway Belt</option>
+                                <option value="Zone I - University Area">Zone I - University Area</option>
+                                <option value="Zone J - Hospital Road">Zone J - Hospital Road</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="waterDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Is Safe?</label>
+                            <select id="waterIsSafe">
+                                <option value="true">Yes — Safe</option>
+                                <option value="false">No — Contaminated</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>pH Level (0-14)</label>
+                            <input type="number" id="waterPH" step="0.1" min="0" max="14"
+                                placeholder="6.5 - 8.5 is safe" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Turbidity (NTU)</label>
+                            <input type="number" id="waterTurbidity" step="0.1" min="0" placeholder="0-5 is safe"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label>Coliform Count (CFU/100ml)</label>
+                            <input type="number" id="waterColiform" min="0" placeholder="0-10 is safe" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Dissolved Oxygen (mg/L)</label>
+                            <input type="number" id="waterDO" step="0.1" min="0" placeholder="5-9 is safe" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Temperature (°C)</label>
+                            <input type="number" id="waterTemp" step="0.1" value="25">
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn" id="waterSubmitBtn">➕ Add Water Report</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- TAB 3: View Records -->
+        <div class="tab-content" id="records">
+            <button class="submit-btn" onclick="exportData()" id="exportBtn"
+                style="margin-bottom: 24px; background: linear-gradient(135deg, #f59e0b, #f97316);">
+                📁 Export All to "mongo saved reports" Folder
+            </button>
+
+            <div class="records-card" style="margin-bottom: 24px;">
+                <div class="records-header">
+                    <h3>🏥 Custom Case Records</h3>
+                    <span class="record-count" id="caseRecordCount">Loading...</span>
+                </div>
+                <div id="caseRecordsTable">
+                    <div class="empty-msg">Loading custom data...</div>
+                </div>
+            </div>
+
+            <div class="records-card">
+                <div class="records-header">
+                    <h3>💧 Custom Water Reports</h3>
+                    <span class="record-count" id="waterRecordCount">Loading...</span>
+                </div>
+                <div id="waterRecordsTable">
+                    <div class="empty-msg">Loading custom data...</div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <footer class="footer">
+        <p>📝 Disease Outbreak Dashboard — Custom Data Entry | <a href="/"
+                style="color: var(--accent-blue); text-decoration: none;">Back to Dashboard</a></p>
+    </footer>
+
+    <script>
+        // ===== Disease type mapping =====
+        const DISEASE_TYPES = {
+            "Cholera": { type: "Waterborne", spread: "Contaminated water/food" },
+            "Typhoid": { type: "Waterborne", spread: "Contaminated water/food" },
+            "Hepatitis A": { type: "Waterborne", spread: "Contaminated water" },
+            "Dengue": { type: "Mosquito-borne", spread: "Aedes mosquito" },
+            "Malaria": { type: "Mosquito-borne", spread: "Anopheles mosquito" },
+        };
+
+        // Set default dates to today
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("caseDate").value = today;
+        document.getElementById("waterDate").value = today;
+
+        // ===== Tab switching =====
+        function switchTab(tabId) {
+            document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+            document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+            document.getElementById(tabId).classList.add("active");
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add("active");
+            if (tabId === "records") loadRecords();
+        }
+
+        // ===== Auto-fill disease type =====
+        function updateDiseaseType() {
+            const disease = document.getElementById("caseDisease").value;
+            const info = DISEASE_TYPES[disease];
+            document.getElementById("caseDiseaseType").value = info ? info.type : "";
+        }
+
+        // ===== Toast notification =====
+        function showToast(message, type = "success") {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.className = `toast toast-${type} show`;
+            setTimeout(() => toast.classList.remove("show"), 3000);
+        }
+
+        // ===== Check DB Status =====
+        async function checkDBStatus() {
+            try {
+                const res = await fetch("/api/db-status");
+                const data = await res.json();
+                const el = document.getElementById("dbStatus");
+                const textEl = document.getElementById("dbStatusText");
+
+                if (data.connected) {
+                    el.className = "db-status db-connected";
+                    textEl.textContent = `✅ MongoDB Connected — Database: ${data.database}`;
+                    document.getElementById("caseSubmitBtn").disabled = false;
+                    document.getElementById("waterSubmitBtn").disabled = false;
+                } else {
+                    el.className = "db-status db-disconnected";
+                    textEl.textContent = "❌ MongoDB Not Connected — Start MongoDB to add custom data";
+                    document.getElementById("caseSubmitBtn").disabled = true;
+                    document.getElementById("waterSubmitBtn").disabled = true;
+                }
+            } catch (err) {
+                document.getElementById("dbStatusText").textContent = "❌ Cannot reach server";
+            }
+        }
+
+        // ===== Submit Case =====
+        async function submitCase(e) {
+            e.preventDefault();
+            const disease = document.getElementById("caseDisease").value;
+            const info = DISEASE_TYPES[disease] || {};
+
+            const body = {
+                date: document.getElementById("caseDate").value,
+                zone: document.getElementById("caseZone").value,
+                disease: disease,
+                diseaseType: info.type || "Unknown",
+                spreadBy: info.spread || "",
+                caseCount: parseInt(document.getElementById("caseCaseCount").value),
+                activeCases: parseInt(document.getElementById("caseActiveCases").value),
+                severityBreakdown: {
+                    Mild: parseInt(document.getElementById("caseMild").value) || 0,
+                    Moderate: parseInt(document.getElementById("caseModerate").value) || 0,
+                    Severe: parseInt(document.getElementById("caseSevere").value) || 0,
+                    Critical: parseInt(document.getElementById("caseCritical").value) || 0,
+                },
+            };
+
+            try {
+                const res = await fetch("/api/cases", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body),
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast("✅ Case record added successfully!");
+                    document.getElementById("caseForm").reset();
+                    document.getElementById("caseDate").value = today;
+                } else {
+                    showToast("❌ " + (data.error || "Failed to add record"), "error");
+                }
+            } catch (err) {
+                showToast("❌ Server error: " + err.message, "error");
+            }
+        }
+
+        // ===== Submit Water Report =====
+        async function submitWater(e) {
+            e.preventDefault();
+
+            const body = {
+                source: document.getElementById("waterSource").value,
+                zone: document.getElementById("waterZone").value,
+                date: document.getElementById("waterDate").value,
+                pH: parseFloat(document.getElementById("waterPH").value),
+                turbidity: parseFloat(document.getElementById("waterTurbidity").value),
+                coliformCount: parseInt(document.getElementById("waterColiform").value),
+                dissolvedOxygen: parseFloat(document.getElementById("waterDO").value),
+                temperature: parseFloat(document.getElementById("waterTemp").value) || 25,
+                isSafe: document.getElementById("waterIsSafe").value === "true",
+            };
+
+            try {
+                const res = await fetch("/api/water-quality", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body),
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast("✅ Water report added successfully!");
+                    document.getElementById("waterForm").reset();
+                    document.getElementById("waterDate").value = today;
+                } else {
+                    showToast("❌ " + (data.error || "Failed to add report"), "error");
+                }
+            } catch (err) {
+                showToast("❌ Server error: " + err.message, "error");
+            }
+        }
+
+        // ===== Load Custom Records =====
+        async function loadRecords() {
+            try {
+                const res = await fetch("/api/custom-data");
+                const data = await res.json();
+
+                // Case records
+                document.getElementById("caseRecordCount").textContent = `${data.totalCases || 0} records`;
+                if (!data.mongoConnected) {
+                    document.getElementById("caseRecordsTable").innerHTML = '<div class="empty-msg">MongoDB not connected</div>';
+                    document.getElementById("waterRecordsTable").innerHTML = '<div class="empty-msg">MongoDB not connected</div>';
+                    document.getElementById("waterRecordCount").textContent = "0 records";
+                    return;
+                }
+
+                if (data.cases.length === 0) {
+                    document.getElementById("caseRecordsTable").innerHTML = '<div class="empty-msg">No custom case records yet. Add some!</div>';
+                } else {
+                    let html = '<table><thead><tr><th>Date</th><th>Zone</th><th>Disease</th><th>Type</th><th>Cases</th><th>Active</th><th>Action</th></tr></thead><tbody>';
+                    for (const c of data.cases) {
+                        html += `<tr>
+              <td>${c.date}</td>
+              <td>${c.zone}</td>
+              <td><strong>${c.disease}</strong></td>
+              <td>${c.diseaseType}</td>
+              <td>${c.caseCount}</td>
+              <td>${c.activeCases}</td>
+              <td><button class="delete-btn" onclick="deleteCase('${c._id}')">🗑️ Delete</button></td>
+            </tr>`;
+                    }
+                    html += '</tbody></table>';
+                    document.getElementById("caseRecordsTable").innerHTML = html;
+                }
+
+                // Water reports
+                document.getElementById("waterRecordCount").textContent = `${data.totalWaterReports || 0} records`;
+                if (data.waterReports.length === 0) {
+                    document.getElementById("waterRecordsTable").innerHTML = '<div class="empty-msg">No custom water reports yet. Add some!</div>';
+                } else {
+                    let html = '<table><thead><tr><th>Date</th><th>Source</th><th>Zone</th><th>pH</th><th>Coliform</th><th>Safe?</th><th>Action</th></tr></thead><tbody>';
+                    for (const r of data.waterReports) {
+                        html += `<tr>
+              <td>${r.date}</td>
+              <td>${r.source}</td>
+              <td>${r.zone}</td>
+              <td>${r.pH}</td>
+              <td>${r.coliformCount}</td>
+              <td>${r.isSafe ? '✅ Yes' : '❌ No'}</td>
+              <td><button class="delete-btn" onclick="deleteWater('${r._id}')">🗑️ Delete</button></td>
+            </tr>`;
+                    }
+                    html += '</tbody></table>';
+                    document.getElementById("waterRecordsTable").innerHTML = html;
+                }
+
+            } catch (err) {
+                document.getElementById("caseRecordsTable").innerHTML = '<div class="empty-msg">Error loading data</div>';
+            }
+        }
+
+        // ===== Export Data =====
+        async function exportData() {
+            const btn = document.getElementById("exportBtn");
+            const originalText = btn.innerText;
+            btn.innerText = "⏳ Exporting...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch("/api/export", { method: "POST" });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast(`✅ Exported! Files saved to 'mongo saved reports'`);
+                } else {
+                    showToast("❌ " + (data.error || "Export failed"), "error");
+                }
+            } catch (err) {
+                showToast("❌ Server error: " + err.message, "error");
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // ===== Delete records =====
+        async function deleteCase(id) {
+            if (!confirm("Delete this case record?")) return;
+            try {
+                const res = await fetch(`/api/cases/${id}`, { method: "DELETE" });
+                const data = await res.json();
+                if (data.success) { showToast("Record deleted"); loadRecords(); }
+                else showToast("❌ " + data.error, "error");
+            } catch (err) { showToast("❌ Error deleting", "error"); }
+        }
+
+        async function deleteWater(id) {
+            if (!confirm("Delete this water report?")) return;
+            try {
+                const res = await fetch(`/api/water-quality/${id}`, { method: "DELETE" });
+                const data = await res.json();
+                if (data.success) { showToast("Report deleted"); loadRecords(); }
+                else showToast("❌ " + data.error, "error");
+            } catch (err) { showToast("❌ Error deleting", "error"); }
+        }
+
+        // ===== Init =====
+        checkDBStatus();
+    </script>
+
+</body>
+
+</html>

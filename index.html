@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Predictive Disease Outbreak Dashboard - 48 hour forecasting with anomaly detection">
+    <title>Disease Outbreak Dashboard</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- Leaflet.js -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">🏥</div>
+            <div>
+                <h1>Disease Outbreak Dashboard</h1>
+                <p class="subtitle">Predictive Analytics &amp; 48-Hour Forecasting &mdash; All Data Anonymized</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <a href="/add-data.html" class="business-btn btn-add-data" id="addDataBtn">📝 Add Data</a>
+            <a href="/business-model.html" class="business-btn" id="businessModelBtn">💼 Business Model</a>
+            <div class="status-badge" id="systemStatus">
+                <span class="pulse"></span>
+                <span>Live Monitoring</span>
+            </div>
+            <div class="last-updated" id="lastUpdated">Loading...</div>
+        </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+
+        <!-- ROW 1: Summary Cards -->
+        <section class="cards-row">
+            <div class="card stat-card" id="cardTotalCases">
+                <div class="card-icon">🏥</div>
+                <div class="card-info">
+                    <span class="card-label">Total Cases</span>
+                    <span class="card-value" id="totalCases">--</span>
+                </div>
+            </div>
+            <div class="card stat-card" id="cardActiveCases">
+                <div class="card-icon">🩺</div>
+                <div class="card-info">
+                    <span class="card-label">Active Cases</span>
+                    <span class="card-value" id="activeCases">--</span>
+                </div>
+            </div>
+            <div class="card stat-card" id="cardAlerts">
+                <div class="card-icon">🔔</div>
+                <div class="card-info">
+                    <span class="card-label">Active Alerts</span>
+                    <span class="card-value" id="totalAlerts">--</span>
+                </div>
+            </div>
+            <div class="card stat-card" id="cardRisk">
+                <div class="card-icon">⚡</div>
+                <div class="card-info">
+                    <span class="card-label">Overall Risk</span>
+                    <span class="card-value risk-badge" id="overallRisk">--</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ROW 2: Trend Chart + Forecast -->
+        <section class="grid-row-2">
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h2>📈 Disease Trends (Last 90 Days)</h2>
+                </div>
+                <div class="chart-container"><canvas id="trendChart"></canvas></div>
+            </div>
+            <div class="card forecast-card">
+                <div class="card-header">
+                    <h2>🔮 48-Hour Forecast</h2>
+                </div>
+                <div id="forecastList" class="forecast-list">
+                    <p class="loading">Loading forecasts...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ROW 3: Map + Alerts -->
+        <section class="grid-row-3">
+            <div class="card map-card">
+                <div class="card-header">
+                    <h2>🗺️ Disease Hotspot Map</h2>
+                </div>
+                <div id="map" class="map-container"></div>
+            </div>
+            <div class="card alerts-card">
+                <div class="card-header">
+                    <h2>🚨 Alerts &amp; Warnings</h2>
+                </div>
+                <div id="alertsList" class="alerts-list">
+                    <p class="loading">Loading alerts...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ROW 4: Water Quality + Disease Distribution -->
+        <section class="grid-row-4">
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h2>💧 Water Quality vs Disease Cases</h2>
+                </div>
+                <div class="chart-container"><canvas id="waterChart"></canvas></div>
+            </div>
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h2>🦠 Disease Distribution</h2>
+                </div>
+                <div class="chart-container"><canvas id="diseaseChart"></canvas></div>
+            </div>
+        </section>
+
+        <!-- ROW 5: Severity + Correlations -->
+        <section class="grid-row-5">
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h2>📊 Cases by Severity</h2>
+                </div>
+                <div class="chart-container"><canvas id="severityChart"></canvas></div>
+            </div>
+            <div class="card table-card">
+                <div class="card-header">
+                    <h2>🔗 Water Quality Correlations by Zone</h2>
+                </div>
+                <div class="table-container">
+                    <table id="correlationTable">
+                        <thead>
+                            <tr>
+                                <th>Zone</th>
+                                <th>Cases</th>
+                                <th>Avg pH</th>
+                                <th>Avg Coliform</th>
+                                <th>Water Risk</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="correlationBody">
+                            <tr>
+                                <td colspan="6" class="loading">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <p>🏥 Predictive Disease Outbreak Dashboard &mdash; PS5 Analytics | 🔒 All data is anonymized</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
