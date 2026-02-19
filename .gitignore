@@ -1,7 +1,0 @@
-node_modules/
-package-lock.json
-server/data/hospital_admissions.json
-server/data/water_quality.json
-.DS_Store
-Thumbs.db
-*.log
